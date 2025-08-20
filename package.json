@@ -1,0 +1,11 @@
+{
+  "name": "campaigns-and-quests",
+  "version": "1.0.0",
+  "description": "It is a platform where owners can create campaigns which consists of various quests on which users can participate and get defined rewards.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Shreyansh",
+  "license": "ISC"
+}
