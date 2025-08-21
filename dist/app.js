@@ -1,16 +1,12 @@
 import express from 'express';
 const app = express();
-
-
 import dotenv from 'dotenv';
 dotenv.config();
-
-
 import mongoose from 'mongoose';
 async function main() {
     try {
         if (!process.env.MONGO_URL) {
-            throw new Error("MONGO_URL is not defined");
+            throw new Error("MONGO_URL is not defined in .env");
         }
         await mongoose.connect(process.env.MONGO_URL);
         console.log("MongoDB connected");
@@ -20,15 +16,8 @@ async function main() {
     }
 }
 main();
-
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-
-
-
-
 app.all("", (req, res) => {
     res.status(404).send("Page Not Found!");
 });
