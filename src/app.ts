@@ -4,6 +4,9 @@ const app = express();
 import dotenv from 'dotenv';
 dotenv.config();
 
+import campaignRoutes from './routes/campaign.js';
+import questRoutes from './routes/quest.js';
+
 import mongoose from 'mongoose';
 
 async function main() {
@@ -24,7 +27,8 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
 
-
+app.use("/campaigns", campaignRoutes);
+app.use("/quests", questRoutes);
 
 app.all("", (req:Request,res:Response)=>{
     res.status(404).send("Page Not Found!");

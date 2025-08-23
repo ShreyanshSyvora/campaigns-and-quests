@@ -8,7 +8,7 @@ export interface IUser extends Document {
     completed_quests:Types.ObjectId[];
 }
 
-const CampaignOwnerSchema = new Schema<IUser>(
+const UserSchema = new Schema<IUser>(
     {
         username:{
             type:String,
@@ -33,7 +33,7 @@ const CampaignOwnerSchema = new Schema<IUser>(
     {timestamps:true}
 );
 
-export const User = mongoose.model<IUser>("User", CampaignOwnerSchema);
+export const User = mongoose.model<IUser>("User", UserSchema);
 
 
 
