@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 import campaignRoutes from './routes/campaign.js';
 import questRoutes from './routes/quest.js';
+import authRoutes from "./routes/auth.js";
+import userRoutes from './routes/user.js';
 import mongoose from 'mongoose';
 async function main() {
     try {
@@ -22,6 +24,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/campaigns", campaignRoutes);
 app.use("/quests", questRoutes);
+app.use("/auth", authRoutes);
+app.use("/", userRoutes);
 app.all("", (req, res) => {
     res.status(404).send("Page Not Found!");
 });
