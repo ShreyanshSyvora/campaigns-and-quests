@@ -13,5 +13,4 @@ router.delete("/:id",isAuthenticated, isCampaignOwner, deleteCampaign);
 
 router.post("/:id/quests",isAuthenticated, isCampaignOwner, addQuestToCampaign);
 
-
 export default router;

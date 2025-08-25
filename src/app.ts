@@ -8,6 +8,7 @@ import campaignRoutes from './routes/campaign.js';
 import questRoutes from './routes/quest.js';
 import authRoutes from "./routes/auth.js";
 import userRoutes from './routes/user.js';
+import twitterRoutes from './routes/twitter.js';
 
 import mongoose from 'mongoose';
 import session from "express-session";
@@ -37,6 +38,7 @@ app.use("/campaigns", campaignRoutes);
 app.use("/quests", questRoutes);
 app.use("/auth", authRoutes);
 app.use("/", userRoutes);
+app.use("/twitter", twitterRoutes);
 
 app.all("", (req:Request,res:Response)=>{
     res.status(404).send("Page Not Found!");
