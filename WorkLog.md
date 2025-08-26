@@ -19,3 +19,10 @@ Date - 25 August 2025 :
 -> Started with authentication where I performed authentication via wallet address where firstly created the nonce string and then verified the signature payload with the original wallet address.
 -> Created the middlewares for authorization like : isAuthenticated and isCampaignOwner
 -> Added the required middlewares in the various routes.
+
+Date - 26 August 2025 :
+-> Created the understanding of how the twitter apis work.
+-> Added twitter linkage to generate user_id from twitter_handle of the user as well as campaign owners.
+-> Created the quest verification route where added things like rewarding loyalty points, appending of user to participants of campaigns and added some checks.
+-> Started with the quest_type "twitter_follow" but could not fetch the data since it can be possible only with the enterprise subscription.
+-> Currently looking for the alternatives like discord or telegram to again implement in my project for free.
