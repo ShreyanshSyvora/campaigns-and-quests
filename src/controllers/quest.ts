@@ -2,6 +2,10 @@ import express, { Request, Response } from "express";
 import { Campaign } from "../models/Campaign.js";
 import { Quest } from "../models/Quest.js";
 import { AuthRequest } from "../middleware/authMiddleware.js"; 
+import twitterApi from "../utils/twitterApi.js";
+import { User } from "../models/User.js";
+import { CampaignOwner } from "../models/CampaignOwner.js";
+import { Types } from "mongoose";
 
 
 export const updateQuest = async (req: AuthRequest, res: Response) => {
@@ -61,5 +65,46 @@ export const deleteQuest = async (req: AuthRequest, res: Response) => {
     res.json({ message: "Quest deleted successfully" });
   } catch (err) {
     res.status(500).json({ message: "Error deleting quest", error: err });
+  }
+};
+
+export const verifyQuest = async (req: AuthRequest, res: Response) => {
+  try {
+    const questId = req.params.id;
+    const userId = req.user?.id;
+
+    const quest = await Quest.findById(questId);
+    if (!quest) return res.status(404).json({ message: "Quest not found" });
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    
+    if (user.completed_quests.some((q) => q.toString() === (quest._id as import("mongoose").Types.ObjectId | string).toString())) {
+      return res.status(400).json({ message: "Quest already completed" });
+    }
+
+    let success = false;
+
+   //types
+
+    if (!success) {
+      return res.status(400).json({ message: "Quest not yet completed" });
+    }
+   
+    user.completed_quests.push(quest._id as import("mongoose").Types.ObjectId);
+    user.loyalty_points += quest.points_offered;
+    await user.save();
+
+    const campaign = await Campaign.findById(quest.campaign_id);
+    
+      
+    campaign?.participants.push(new Types.ObjectId(userId));
+    await campaign?.save();
+
+    return res.json({message: "Quest verified successfully", points_awarded: quest.points_offered, total_points: user.loyalty_points, quest_id: quest._id});
+
+  } catch (err: any) {
+    return res.status(500).json({ message: "Error verifying quest", err });
   }
 };
