@@ -59,7 +59,7 @@ export const verifySignature = async (req: Request, res: Response) => {
     const token = jwt.sign(
       { id: account._id, role },
       process.env.JWT_SECRET!,
-      { expiresIn: "1h" }
+      { expiresIn: "24h" }
     );
 
     res.json({ success: true, msg: "Authenticated", token, role });
