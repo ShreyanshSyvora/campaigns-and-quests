@@ -11,8 +11,6 @@ import userRoutes from './routes/user.js';
 import twitterRoutes from './routes/twitter.js';
 
 import mongoose from 'mongoose';
-import session from "express-session";
-
 
 async function main() {
   try {
@@ -27,12 +25,8 @@ async function main() {
 }
 main();
 
-
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
-
-
-
 
 app.use("/campaigns", campaignRoutes);
 app.use("/quests", questRoutes);

@@ -17,7 +17,7 @@ function extractTweetId(tweetUrl: string): string | null {
   try {
     const url = new URL(tweetUrl);
     const parts = url.pathname.split("/");
-    // Example: /elonmusk/status/1847612389471528961
+    
     const statusIndex = parts.findIndex((p) => p === "status");
     if (statusIndex !== -1 && parts[statusIndex + 1]) {
       return parts[statusIndex + 1];
@@ -33,7 +33,7 @@ function extractTwitterUsername(profileUrl: string): string | null {
   try {
     const url = new URL(profileUrl);
     const parts = url.pathname.split("/").filter(Boolean);
-    return parts[0] || null; // first part after domain
+    return parts[0] || null; 
   } catch {
     return null;
   }

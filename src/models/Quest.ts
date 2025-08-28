@@ -1,6 +1,6 @@
 import mongoose, {Document, Schema, Types} from 'mongoose';
 
-export type QuestType = "follow_twitter" | "like_tweet" | "retweet_tweet";
+export type QuestType = "follow_twitter" | "like_tweet" | "retweet_tweet" | "tweet_tag";
 
 export interface IQuest extends Document{
     title:string;
@@ -35,7 +35,7 @@ const QuestSchema = new Schema<IQuest>({
     },
     type:{
         type:String,
-        enum:["follow_twitter", "like_tweet", "retweet_tweet"],
+        enum:["follow_twitter", "like_tweet", "retweet_tweet", "tweet_tag"],
         required:true
     },
 },
