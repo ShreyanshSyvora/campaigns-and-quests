@@ -5,7 +5,9 @@ export interface ICampaign extends Document{
    description:string,
    quests:Types.ObjectId[],
    participants:Types.ObjectId[],
-   owner:Types.ObjectId
+   owner:Types.ObjectId,
+   createdAt:Date,
+   expiryDate?:Date
 }
 
 const CampaignSchema = new Schema<ICampaign>({
@@ -29,6 +31,13 @@ const CampaignSchema = new Schema<ICampaign>({
         type:Schema.Types.ObjectId,
         ref:"CampaignOwner",
         required:true
+    },
+    createdAt:{
+        type:Date,
+        default:Date.now
+    },
+    expiryDate:{
+        type:Date
     }
 },
 {timestamps:true}

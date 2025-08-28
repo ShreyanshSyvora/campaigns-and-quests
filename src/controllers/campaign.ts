@@ -16,6 +16,13 @@ export const listCampaign = async (req: Request, res: Response) => {
       .populate("quests")
       .populate("owner", "username wallet_address twitter_id");
 
+      for (const campaign of campaigns) {
+        if (campaign.expiryDate && campaign.expiryDate < new Date()) {
+          await campaign.deleteOne();
+          console.log(`Deleted expired campaign: ${campaign._id}`);
+        }
+      }
+
     res.json(campaigns);
   } catch (err: any) {
     res.status(500).json({ message: "Error listing campaign", err });
@@ -47,7 +54,15 @@ export const createCampaign = async (req: AuthRequest, res: Response) => {
       return res.status(403).json({ message: "Only campaign owners can create campaigns" });
     }
 
-    const { name, description } = req.body;
+    const { name, description, expiryDays } = req.body;
+
+    let expiryDate: Date | undefined = undefined;
+
+    if (expiryDays && !isNaN(Number(expiryDays))) {
+      expiryDate = new Date();
+      expiryDate.setDate(expiryDate.getDate() + Number(expiryDays));
+    }
+
 
     const campaign = new Campaign({
       name,
@@ -55,11 +70,11 @@ export const createCampaign = async (req: AuthRequest, res: Response) => {
       owner: req.user.id,
       participants: [],
       quests: [],
+      expiryDate
     });
 
     await campaign.save();
 
-   
     await CampaignOwner.findByIdAndUpdate(req.user.id, {
       $push: { campaigns: campaign._id },
     });
