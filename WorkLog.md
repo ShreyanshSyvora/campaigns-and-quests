@@ -26,3 +26,9 @@ Date - 26 August 2025 :
 -> Created the quest verification route where added things like rewarding loyalty points, appending of user to participants of campaigns and added some checks.
 -> Started with the quest_type "twitter_follow" but could not fetch the data since it can be possible only with the enterprise subscription.
 -> Currently looking for the alternatives like discord or telegram to again implement in my project for free.
+
+Date - 28 August 2025
+-> Completed the quest verification route using Rapid api, where implemented the verification of quests like follow_twitter, retweet_tweet and tag tweet.
+-> tag_tweet also consists of reward distribution on the basis of sentiment of the particular tweet, like full points for positive, no point for negative and half points will be rewarded for the neutral ones.
+-> Implemented the feature of the campaign expiration where campaign owner can explicitely set the expiry of the campaign while creation.
+-> Performed fine tuning of the responses as directed.
