@@ -8,20 +8,23 @@ const nonces: Record<string, string> = {};
 
 export const getNonce = (req: Request, res: Response) => {
   const { address } = req.body;
-  if (!address) return res.status(400).json({ msg: "Address required" });
+  if (!address) return res.status(400).json({ success:false, data:{msg: "Address required" }});
   const nonce = Math.floor(Math.random() * 1000000).toString();
   nonces[address.toLowerCase()] = nonce;
-  res.json({ nonce });
+  res.json({success:true, data:{nonce:nonce}});
 };
 
 export const verifySignature = async (req: Request, res: Response) => {
   const { address, signature, role } = req.body;
   const nonce = nonces[address.toLowerCase()];
-  if (!nonce) return res.status(400).json({ msg: "Nonce not found" });
+  if (!nonce) return res.status(400).json({ success:false, data:{msg: "Nonce not found"} });
+  if (!address || !signature || !role) {
+    return res.status(400).json({ success:false, data:{msg: "Address, signature, and role are required" }});
+  }
   try {
     const recovered = ethers.verifyMessage(nonce, signature);
     if (recovered.toLowerCase() !== address.toLowerCase()) {
-      return res.json({ success: false, msg: "Verification failed" });
+      return res.json({ success: false, data:{msg: "Verification failed" }});
     }
     let account;
     if (role === "campaignOwner") {
@@ -51,9 +54,9 @@ export const verifySignature = async (req: Request, res: Response) => {
       process.env.JWT_SECRET!,
       { expiresIn: "24h" }
     );
-    res.json({ success: true, msg: "Authenticated", token, role });
+    res.json({ success: true, data:{msg: "Authenticated", token:token, role:role }});
   } catch (err:any) {
-    res.json({ success: false, msg: "Error verifying", error: err.message});
+    res.json({ success: false, data:{msg: "Error verifying", error: err.message}});
   }
 };
 

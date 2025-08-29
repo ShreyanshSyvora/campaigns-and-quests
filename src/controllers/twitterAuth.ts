@@ -10,11 +10,11 @@ export const authTwitter = async (req: AuthRequest, res: Response) => {
     const { id, role } = (req as any).user;
 
     if (!handle) {
-      return res.status(400).json({ message: "Twitter handle is required" });
+      return res.status(400).json({success:false, data:{message: "Twitter handle is required" }});
     }
 
     if (role !== "user" && role !== "campaignOwner") {
-      return res.status(400).json({ message: "Invalid role" });
+      return res.status(400).json({ success:false, data:{message: "Invalid role" }});
     }
 
     const response = await twitterApi.get(`/users/by/username/${handle}`);
@@ -22,7 +22,7 @@ export const authTwitter = async (req: AuthRequest, res: Response) => {
     const twitterUser = data.data;
 
     if (!twitterUser) {
-      return res.status(404).json({ message: "Twitter user not found" });
+      return res.status(404).json({ success:false, data:{message: "Twitter user not found" }});
     }
 
     let updatedDoc;
@@ -33,12 +33,12 @@ export const authTwitter = async (req: AuthRequest, res: Response) => {
     }
 
     if (!updatedDoc) {
-      return res.status(404).json({ message: "User/Campaign Owner not found" });
+      return res.status(404).json({ success:false, data:{message: "User/Campaign Owner not found" }});
     }
 
-    res.json({success:true, message: "Twitter account linked successfully", twitter_id: twitterUser.id, username: twitterUser.username, updatedDoc });
+    res.json({success:true, data:{message: "Twitter account linked successfully", twitter_id: twitterUser.id, username: twitterUser.username, updatedDoc }});
   } catch (err: any) {
-    res.status(500).json({ message: "Error linking Twitter", error: err.message });
+    res.status(500).json({ success:false, data:{message: "Error linking Twitter", error: err.message }});
   }
 
 };

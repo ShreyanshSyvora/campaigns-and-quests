@@ -17,13 +17,13 @@ export const updateQuest = async (req: AuthRequest, res: Response) => {
     const { id } = req.params;
 
     const quest = await Quest.findById(id);
-    if (!quest) return res.status(404).json({ message: "Quest not found" });
+    if (!quest) return res.status(404).json({ success:false, data:{message: "Quest not found"} });
 
     const campaign = await Campaign.findById(quest.campaign_id);
-    if (!campaign) return res.status(404).json({ message: "Campaign not found" });
+    if (!campaign) return res.status(404).json({success:false, data: {message: "Campaign not found" }});
 
     if (campaign.owner.toString() !== req.user?.id) {
-      return res.status(403).json({ message: "Not authorized to update this quest" });
+      return res.status(403).json({ success:false, data:{message: "Not authorized to update this quest" }});
     }
 
     const allowedUpdates = ["title", "description", "type", "required_link", "points_offered"];
@@ -34,9 +34,9 @@ export const updateQuest = async (req: AuthRequest, res: Response) => {
     }
 
     await quest.save();
-    res.json({success:true, quest: quest});
+    res.json({success:true, data:{quest: quest}});
   } catch (err: any) {
-    res.status(500).json({ message: "Error updating quest", error: err.message });
+    res.status(500).json({ success:false,data:{message: "Error updating quest", error: err.message }});
   }
 };
 
@@ -45,13 +45,13 @@ export const deleteQuest = async (req: AuthRequest, res: Response) => {
     const { id } = req.params;
 
     const quest = await Quest.findById(id);
-    if (!quest) return res.status(404).json({ message: "Quest not found" });
+    if (!quest) return res.status(404).json({ success:false, data:{message: "Quest not found" }});
 
     const campaign = await Campaign.findById(quest.campaign_id);
-    if (!campaign) return res.status(404).json({ message: "Campaign not found" });
+    if (!campaign) return res.status(404).json({ success:false, data:{message: "Campaign not found" }});
 
     if (campaign.owner.toString() !== req.user?.id) {
-      return res.status(403).json({ message: "Not authorized to delete this quest" });
+      return res.status(403).json({ success:false, data:{message: "Not authorized to delete this quest" }});
     }
 
     await Campaign.findByIdAndUpdate(quest.campaign_id, {
@@ -60,9 +60,9 @@ export const deleteQuest = async (req: AuthRequest, res: Response) => {
 
     await quest.deleteOne();
 
-    res.json({ success:true, message: "Quest deleted successfully" });
+    res.json({ success:true, data:{message: "Quest deleted successfully" }});
   } catch (err: any) {
-    res.status(500).json({ message: "Error deleting quest", error: err.message });
+    res.status(500).json({success:false, data:{message: "Error deleting quest", error: err.message }});
   }
 };
 
@@ -72,17 +72,17 @@ export const verifyQuest = async (req: AuthRequest, res: Response) => {
     const userId = req.user?.id;
 
     const quest = await Quest.findById(questId);
-    if (!quest) return res.status(404).json({ message: "Quest not found" });
+    if (!quest) return res.status(404).json({ success:false, data:{message: "Quest not found" }});
 
     const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ success:false, data:{message: "User not found" }});
 
     if (user.twitter_id === "pending") {
-      return res.status(400).json({ message: "User has not linked Twitter" });
+      return res.status(400).json({ success:false, data:{message: "User has not linked Twitter" }});
     }
 
     if (user.completed_quests.some((q) => q.toString() === (quest._id as import("mongoose").Types.ObjectId | string).toString())) {
-      return res.status(400).json({ message: "Quest already completed" });
+      return res.status(400).json({success:false, data:{message: "Quest already completed" }});
     }
 
     let success = false;
@@ -98,7 +98,7 @@ export const verifyQuest = async (req: AuthRequest, res: Response) => {
       const resp = await twitterApi.get(`/users/by/username/${targetUsername}`);
       const data = resp.data as { data?: { id: string; username: string } };
       if (!data.data) {
-        return res.status(400).json({ message: "Could not resolve Twitter user from username" });
+        return res.status(400).json({ success:false, data:{message: "Could not resolve Twitter user from username" }});
       }
       const twitterUser = data.data.id;
 
@@ -167,12 +167,12 @@ export const verifyQuest = async (req: AuthRequest, res: Response) => {
     // API FOR TWEET_TAG
     if (quest.type === "tweet_tag") {
       if (!req.body.tweetUrl) {
-        return res.status(400).json({ message: "Tweet URL is required" });
+        return res.status(400).json({ sucess:false, data:{message: "Tweet URL is required"} });
       }
 
       const match = req.body.tweetUrl.match(/status\/(\d+)/);
       if (!match) {
-        return res.status(400).json({ message: "Invalid Tweet URL" });
+        return res.status(400).json({ success:false, data:{message: "Invalid Tweet URL" }});
       }
       const tweetId = match[1];
 
@@ -200,18 +200,14 @@ export const verifyQuest = async (req: AuthRequest, res: Response) => {
       );
 
       if (!tweetEntry) {
-        return res
-          .status(400)
-          .json({ message: "Could not fetch Tweet details" });
+        return res.status(400).json({ success:false, data:{message: "Could not fetch Tweet details" }});
       }
 
       const tweetData =
         tweetEntry.content?.itemContent?.tweet_results?.result?.legacy;
 
       if (!tweetData) {
-        return res
-          .status(400)
-          .json({ message: "Tweet data missing in response" });
+        return res.status(400).json({ success:false, data:{message: "Tweet data missing in response"} });
       }
 
       const mentions = tweetData.entities?.user_mentions || [];
@@ -219,7 +215,7 @@ export const verifyQuest = async (req: AuthRequest, res: Response) => {
 
       const handleMatch = quest.required_link.match(/twitter\.com\/([^/]+)/);
       if (!handleMatch) {
-        return res.status(400).json({ message: "Invalid required_link in quest" });
+        return res.status(400).json({ success:false, data:{message: "Invalid required_link in quest" }});
       }
       const requiredHandle = handleMatch[1].toLowerCase();
 
@@ -245,13 +241,13 @@ export const verifyQuest = async (req: AuthRequest, res: Response) => {
         quest.points_offered = rewardPoints; 
         success = true;
       } else {
-        return res.status(400).json({ message: "Tweet sentiment is not positive. No points awarded." });
+        return res.json({ success:true, data:{message: "Tweet sentiment is not positive. No points awarded." }});
       }
 
     }
 
     if (!success) {
-      return res.status(400).json({ message: "Quest not yet completed" });
+      return res.status(400).json({ success:false, data:{message: "Quest not yet completed"} });
     }
 
     user.completed_quests.push(quest._id as import("mongoose").Types.ObjectId);
@@ -275,12 +271,14 @@ export const verifyQuest = async (req: AuthRequest, res: Response) => {
 
     return res.json({
       success: true,
+      data:{
       message: "Quest verified successfully",
       points_awarded: quest.points_offered,
       total_points: user.loyalty_points,
-      quest_id: quest._id,
+      quest_id: quest._id
+      }
     });
   } catch (err: any) {
-    return res.status(500).json({ message: "Error verifying quest", err: err.message });
+    return res.status(500).json({ success:false, data:{message: "Error verifying quest", error: err.message }});
   }
 };
